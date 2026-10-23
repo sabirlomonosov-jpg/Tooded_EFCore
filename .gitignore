@@ -1,0 +1,14 @@
+**/bin/
+**/obj/
+**/.vs/
+**/publish/
+.vscode/
+*.user
+*.suo
+*.mdf
+*.ldf
+*.sqlite
+*.db
+*.pdf
+.env
+.env.*

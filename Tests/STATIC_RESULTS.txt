@@ -1,0 +1,73 @@
+PASS - файл Program.cs
+PASS - файл Kaustad.cs
+PASS - файл Toode.cs
+PASS - файл Kategooria.cs
+PASS - файл ToodedContext.cs
+PASS - файл Kasutaja.cs
+PASS - файл PasswordHelper.cs
+PASS - файл AktiivneKasutaja.cs
+PASS - файл Ostukorv.cs
+PASS - файл Form2.cs
+PASS - файл Form3.cs
+PASS - файл ArveForm.cs
+PASS - файл FormMain.cs
+PASS - файл LoginForm.cs
+PASS - файл Migrations/20261023000100_InitialCreate.cs
+PASS - файл Migrations/20261023000200_LisaKasutajad.cs
+PASS - файл Migrations/ToodedContextModelSnapshot.cs
+PASS - Form2 дизайнер
+PASS - Form2 конструктор
+PASS - Form2 namespace
+PASS - Form3 дизайнер
+PASS - Form3 конструктор
+PASS - Form3 namespace
+PASS - ArveForm дизайнер
+PASS - ArveForm конструктор
+PASS - ArveForm namespace
+PASS - FormMain дизайнер
+PASS - FormMain конструктор
+PASS - FormMain namespace
+PASS - LoginForm дизайнер
+PASS - LoginForm конструктор
+PASS - LoginForm namespace
+PASS - SDK-style csproj
+PASS - правильный TargetFramework
+PASS - правильная версия языка
+PASS - NuGet Microsoft.EntityFrameworkCore.SqlServer
+PASS - NuGet Microsoft.EntityFrameworkCore.Tools
+PASS - NuGet PdfSharpCore
+PASS - NuGet BCrypt.Net-Next
+PASS - таблица Toodetabel
+PASS - таблица Kategooriatabel
+PASS - таблица Kasutajad
+PASS - Migrate()
+PASS - LoginForm entry
+PASS - демо-аккаунты по методичке
+PASS - BCrypt hashing
+PASS - Form2 btnLisa_Click
+PASS - Form2 btnUuenda_Click
+PASS - Form2 btnKustuta_Click
+PASS - Form2 btnValiPilt_Click
+PASS - Фото копируются в LocalAppData
+PASS - Картинка необязательна при редактировании
+PASS - категории на табах
+PASS - визуальные карточки
+PASS - общая корзина
+PASS - проверка остатков в корзине
+PASS - PDFsharpCore
+PASS - PDF сохраняется в Arved
+PASS - SMTP send
+PASS - нехардкоженный SMTP пароль
+PASS - остатки списываются в SQL транзакции
+PASS - закрытие корзины при покупке
+PASS - форма логина
+PASS - закрытие LoginForm после меню
+PASS - управление ролями
+PASS - InitialCreate — создание таблиц
+PASS - LisaKasutajad — создание таблицы
+PASS - опубликованный профиль
+PASS - XML Tooded_EFCore.csproj
+PASS - XML FolderProfile.pubxml
+PASS - XML ToodedInstaller.wxs
+
+Итог: 71/71 статических проверок пройдено

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <!-- Alternatiiv Visual Studio Installer Projects 2022 jaoks: WiX Toolset 3.11 lähtekood. -->
+  <Product Id="*" Name="Tooded App" Language="1033" Version="1.0.0.0"
+           Manufacturer="Tooded Kooliprojekt" UpgradeCode="{47EF847B-E62A-450C-A3C1-BB42CBBC46EC}">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+    <MajorUpgrade DowngradeErrorMessage="Uuem Tooded App on juba paigaldatud." />
+    <MediaTemplate EmbedCab="yes" />
+    <Feature Id="Complete" Title="Tooded App" Level="1">
+      <ComponentGroupRef Id="PublishedFiles" />
+      <ComponentRef Id="ApplicationShortcutComponent" />
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="Tooded App" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder" />
+      <Directory Id="DesktopFolder" />
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="ApplicationShortcutComponent" Guid="*">
+        <Shortcut Id="StartMenuShortcut" Directory="ProgramMenuFolder" Name="Tooded App"
+                  WorkingDirectory="INSTALLFOLDER" Target="[INSTALLFOLDER]Tooded_EFCore.exe" Advertise="no" />
+        <Shortcut Id="DesktopShortcut" Directory="DesktopFolder" Name="Tooded App"
+                  WorkingDirectory="INSTALLFOLDER" Target="[INSTALLFOLDER]Tooded_EFCore.exe" Advertise="no" />
+        <RegistryValue Root="HKLM" Key="Software\ToodedKooliprojekt\ToodedApp" Name="Installed"
+                       Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
