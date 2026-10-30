@@ -15,7 +15,7 @@ public class ToodedContext : DbContext
         if (optionsBuilder.IsConfigured) return;
         optionsBuilder.UseSqlServer(
             Environment.GetEnvironmentVariable("TOODED_CONNECTION_STRING") ??
-            @"Server=(localdb)\MSSQLLocalDB;Database=Tooded_DB;Trusted_Connection=True;TrustServerCertificate=True;");
+            @"Server=(localdb)\MSSQLLocalDB;Database=Tooded_DB;Trusted_Connection=True;Encrypt=False;");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

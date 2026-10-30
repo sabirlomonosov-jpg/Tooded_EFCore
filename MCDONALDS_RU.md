@@ -70,7 +70,7 @@ dotnet publish Tooded_EFCore/Tooded_EFCore.csproj -c Release --no-restore -o /tm
 По умолчанию остаётся `(localdb)\\MSSQLLocalDB`, база `Tooded_DB`. Для отдельной новой базы можно явно задать строку подключения до запуска приложения, например в PowerShell:
 
 ```powershell
-$env:TOODED_CONNECTION_STRING = 'Server=(localdb)\MSSQLLocalDB;Database=Tooded_McDonalds_DB;Trusted_Connection=True;TrustServerCertificate=True;'
+$env:TOODED_CONNECTION_STRING = 'Server=(localdb)\MSSQLLocalDB;Database=Tooded_McDonalds_DB;Trusted_Connection=True;Encrypt=False;'
 dotnet run --project Tooded_EFCore/Tooded_EFCore.csproj
 ```
 
