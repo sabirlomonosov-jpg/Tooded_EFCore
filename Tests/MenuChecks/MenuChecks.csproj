@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../Tooded_EFCore/KaivituseKordus.cs" Link="KaivituseKordus.cs" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" />
     <Compile Include="../../Tooded_EFCore/Ostukorv.cs" Link="Ostukorv.cs" />
     <Compile Include="../../Tooded_EFCore/AndmebaasiAlgataja.cs" Link="AndmebaasiAlgataja.cs" />

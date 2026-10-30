@@ -58,5 +58,35 @@ Check("remove missing row is harmless", !Ostukorv.Eemalda(99));
 Ostukorv.Lisa(burger, 1);
 Ostukorv.Tyhjenda();
 Check("successful checkout clears the shared cart", Ostukorv.Ridad.Count == 0 && Ostukorv.Kokku == 0 && !Ostukorv.SaabMaksta);
+int attempts = 0;
+var delays = new List<TimeSpan>();
+KaivituseKordus.Kaivita(() =>
+{
+    attempts++;
+    if (attempts < 3) throw new InvalidOperationException("EF wrapper", new TimeoutException("Cold start"));
+}, delays.Add);
+Check("startup retries nested transient failures with bounded backoff", attempts == 3 &&
+    delays.SequenceEqual(new[] { TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2) }));
+attempts = 0;
+delays.Clear();
+var permanent = new InvalidOperationException("Existing incompatible schema");
+Exception? caught = null;
+try { KaivituseKordus.Kaivita(() => { attempts++; throw permanent; }, delays.Add); }
+catch (Exception ex) { caught = ex; }
+Check("permanent failures preserve original exception and do not retry", attempts == 1 && delays.Count == 0 && ReferenceEquals(caught, permanent));
+attempts = 0;
+delays.Clear();
+var timeout = new TimeoutException("LocalDB unavailable");
+caught = null;
+try { KaivituseKordus.Kaivita(() => { attempts++; throw timeout; }, delays.Add); }
+catch (Exception ex) { caught = ex; }
+Check("startup stops after three failed attempts", attempts == 3 && delays.Count == 2 && ReferenceEquals(caught, timeout));
+attempts = 0;
+delays.Clear();
+KaivituseKordus.Kaivita(() => attempts++, delays.Add);
+Check("healthy startup executes once without waiting", attempts == 1 && delays.Count == 0);
+string detail = KaivituseKordus.Kirjelda(new InvalidOperationException("EF wrapper", new Exception("Underlying connection error")));
+Check("startup error includes inner database failure", detail.Contains("EF wrapper") && detail.Contains("Underlying connection error"));
+Check("purchase context keeps explicit-transaction-compatible execution strategy", !db.Database.CreateExecutionStrategy().RetriesOnFailure);
 if (args.Contains("--sql")) SqlStartupChecks.Run(Check);
 Console.WriteLine($"{count}/{count} checks passed. Live SQL Server checks run only with --sql.");

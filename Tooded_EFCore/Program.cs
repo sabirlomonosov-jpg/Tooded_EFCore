@@ -12,14 +12,13 @@ internal static class Program
         {
             Kaustad.Loo();
             NaidisTooted.ValmistaPildid();
-            using (var db = new ToodedContext())
+            AndmebaasiAlgataja.Kaivita(db =>
             {
-                AndmebaasiAlgataja.Valmista(db);
                 LooAlgkasutajad(db);
                 // Täiesti tühja andmebaasi täidame õppeprojektis näidistoodetega.
                 // Kui tooteid on juba olemas, ei muudeta olemasolevaid ridu.
                 if (!db.Toodetabel.Any()) NaidisTooted.LisaAndmed(db);
-            }
+            });
             Application.Run(new LoginForm());
         }
         catch (Exception ex)
@@ -27,7 +26,7 @@ internal static class Program
             MessageBox.Show(
                 "Programmi käivitamine ebaõnnestus.\n" +
                 "Kontrolli SQL Server LocalDB ühendust ja olemasoleva andmebaasi ligipääsu.\n" +
-                "Ära kustuta olemasolevat andmebaasi.\n\n" + ex.Message,
+                "Ära kustuta olemasolevat andmebaasi.\n\n" + KaivituseKordus.Kirjelda(ex),
                 "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }

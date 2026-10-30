@@ -5,6 +5,27 @@ namespace Tooded_EFCore;
 
 public static class AndmebaasiAlgataja
 {
+    public static void Kaivita(Action<ToodedContext> algandmed)
+    {
+        KaivituseKordus.Kaivita(() =>
+        {
+            using var db = new ToodedContext();
+            try
+            {
+                Valmista(db);
+                algandmed(db);
+            }
+            catch (Exception ex) when (KaivituseKordus.OnAjutine(ex))
+            {
+                // A failed startup must not leave a stale pooled LocalDB connection
+                // for the next attempt. Other databases' pools remain untouched.
+                if (db.Database.GetDbConnection() is SqlConnection sql)
+                    SqlConnection.ClearPool(sql);
+                throw;
+            }
+        });
+    }
+
     public static void Valmista(ToodedContext db)
     {
         var seaded = new SqlConnectionStringBuilder(db.Database.GetConnectionString());
