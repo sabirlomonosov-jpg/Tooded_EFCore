@@ -3,8 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Tooded_EFCore;
 
-// Tootekataloog on MAXIMA veebipoe värvidest ja kaardipaigutusest inspireeritud õppeprojekt.
-// See EI OLE ametlik MAXIMA rakendus. Näidishinnad pärinevad 23.10.2026 kuvatud pakkumistest.
+// McDonald’s-inspired learning menu. Prices are illustrative, not a live restaurant feed.
 public partial class Form3 : Form
 {
     private readonly ToodedContext _db = new();
@@ -21,12 +20,14 @@ public partial class Form3 : Form
         ClientSize = new Size(1240, 820);
         MinimumSize = new Size(900, 600);
 
-        var pais = new Panel { Dock = DockStyle.Top, Height = 121, BackColor = PoeStiil.Tume };
-        pais.Controls.Add(PoeStiil.Silt("TOODED+", 24, 12, 280, 51, 28, true, Color.White));
-        pais.Controls.Add(PoeStiil.Silt("SINU ÕPPEPOOD", 25, 65, 320, 22, 10, true, PoeStiil.Kampaania));
-        pais.Controls.Add(PoeStiil.Silt("Tootekaardid, kategooriad ja soodsad näidishinnad", 317, 31,
-            540, 32, 10, false, Color.White));
-        lblKorv.SetBounds(320, 70, 570, 34);
+        var pais = new Panel { Dock = DockStyle.Top, Height = 121, BackColor = PoeStiil.Punane };
+        pais.Controls.Add(PoeStiil.Logo(24, 15));
+        pais.Controls.Add(PoeStiil.Silt("McDonald’s", 99, 13, 280, 51, 28, true, Color.White));
+        pais.Controls.Add(PoeStiil.Silt("I’m lovin’ it.", 100, 65, 260, 22, 10, true, PoeStiil.Kampaania));
+        var tunnuslause = PoeStiil.Silt("Sinu lemmikud. Värskelt valmistatud.", 400, 31,
+            490, 32, 10, false, Color.White);
+        pais.Controls.Add(tunnuslause);
+        lblKorv.SetBounds(400, 70, 570, 34);
         lblKorv.Font = new Font("Segoe UI", 11, FontStyle.Bold);
         lblKorv.ForeColor = Color.White;
         lblKorv.TextAlign = ContentAlignment.MiddleLeft;
@@ -49,8 +50,8 @@ public partial class Form3 : Form
 
         var tegevused = new Panel { Dock = DockStyle.Top, Height = 77,
             BackColor = Color.White, Padding = new Padding(24, 12, 24, 10) };
-        var silt = PoeStiil.Silt("PAKKUMISED JA TOOTED", 5, 0, 300, 32, 13, true, PoeStiil.Tume);
-        var margis = PoeStiil.Silt("Näidishinnad maxima.ee 23.10.2026 · mitte ametlik pood", 6, 34,
+        var silt = PoeStiil.Silt("MEIE MENÜÜ", 5, 0, 300, 32, 13, true, PoeStiil.Tume);
+        var margis = PoeStiil.Silt("Eesti · näidishinnad € · mitteametlik õppemenüü", 6, 34,
             610, 24, 9, false, PoeStiil.Vaikne);
         txtOtsi.SetBounds(712, 12, 315, 41);
         txtOtsi.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -65,7 +66,7 @@ public partial class Form3 : Form
         tegevused.Controls.AddRange(new Control[] { silt, margis, txtOtsi, btnVarskenda });
 
         var kampaaniariba = new Panel { Dock = DockStyle.Top, Height = 44, BackColor = PoeStiil.Kampaania };
-        lblTulemused = PoeStiil.Silt("TOOTED  •  NÄIDISHINNAD", 24, 0, 1120, 44,
+        lblTulemused = PoeStiil.Silt("VALI OMA LEMMIK", 24, 0, 1120, 44,
             11, true, PoeStiil.Tume);
         kampaaniariba.Controls.Add(lblTulemused);
 
@@ -79,6 +80,15 @@ public partial class Form3 : Form
         Controls.Add(tegevused);
         Controls.Add(pais);
 
+        void KohandaPaigutus()
+        {
+            tunnuslause.Visible = ClientSize.Width >= 1200;
+            lblKorv.Width = Math.Max(150, ClientSize.Width - lblKorv.Left - 24);
+            margis.Width = Math.Max(180, txtOtsi.Left - 20);
+            lblTulemused.Width = Math.Max(200, ClientSize.Width - 48);
+        }
+        SizeChanged += (_, _) => KohandaPaigutus();
+        KohandaPaigutus();
         LaePood();
         NaitaKorviSeis();
     }
@@ -113,12 +123,12 @@ public partial class Form3 : Form
         foreach (var pilt in laaditudPildid) pilt.Dispose();
         laaditudPildid.Clear();
 
-        LisaLeht("Kõik tooted", sobivad);
+        LisaLeht("Kogu menüü", sobivad);
         foreach (var grupp in sobivad.GroupBy(t => t.Kategooria.Kategooria_nimetus)
                      .OrderBy(x => x.Key))
             LisaLeht(grupp.Key, grupp.ToList());
 
-        lblTulemused.Text = $"{sobivad.Count} TOODET  •  ÕPPENÄIDIS  •  HINNAD 23.10.2026";
+        lblTulemused.Text = $"{sobivad.Count} VALIKUT  •  BURGERID, FRIKAD JA HEAD HETKED";
     }
 
     private void LisaLeht(string nimi, IReadOnlyList<Toode> read)
@@ -158,39 +168,18 @@ public partial class Form3 : Form
         {
             Bounds = new Rectangle(10, 10, 200, 160),
             SizeMode = PictureBoxSizeMode.Zoom,
-            BackColor = Color.FromArgb(249, 250, 253),
+            BackColor = Color.White,
             Image = sisu,
             Cursor = Cursors.Hand
         };
         if (sisu == null)
             pilt.BackColor = PoeStiil.HeleSinine;
 
-        var naidis = NaidisTooted.Andmed.Any(x =>
-            string.Equals(x.Nimi, t.Toodenimetus, StringComparison.OrdinalIgnoreCase));
-        var soodustus = NaidisTooted.VordleHinda(t);
-        if (naidis)
-        {
-            var lipp = PoeStiil.Silt(soodustus is { } info
-                    ? $"NÄIDIS  −{info.Protsent}%" : "NÄIDISTOODE",
-                15, 15, 118, 30, 9, true, Color.White);
-            lipp.BackColor = PoeStiil.Peamine;
-            lipp.TextAlign = ContentAlignment.MiddleCenter;
-            kaart.Controls.Add(lipp);
-            lipp.BringToFront();
-        }
-
         var nimi = PoeStiil.Silt(t.Toodenimetus, 12, 173, 199, 45, 10, true);
         nimi.TextAlign = ContentAlignment.TopLeft;
         nimi.AutoEllipsis = true;
-        var hind = PoeStiil.Silt($"{t.Hind:F2} €", 12, 222, 116, 35, 16, true, PoeStiil.Peamine);
-        if (soodustus is { } vordlus)
-        {
-            var vanaHind = PoeStiil.Silt($"{vordlus.VarasemHind:F2} €", 131, 230, 77, 20,
-                9, false, PoeStiil.Vaikne);
-            vanaHind.Font = new Font("Segoe UI", 9, FontStyle.Strikeout);
-            kaart.Controls.Add(vanaHind);
-        }
-        var laos = PoeStiil.Silt($"Laos (näide): {t.Kogus} tk", 12, 263, 191, 20,
+        var hind = PoeStiil.Silt($"{t.Hind:F2} €", 12, 222, 116, 35, 16, true, PoeStiil.Tekst);
+        var laos = PoeStiil.Silt($"Saadaval: {t.Kogus} tk", 12, 263, 191, 20,
             9, false, PoeStiil.Vaikne);
         var kogus = new NumericUpDown
         {
@@ -220,10 +209,6 @@ public partial class Form3 : Form
         pilt.Click += (_, _) => MessageBox.Show(
             $"{t.Toodenimetus}\nHind: {t.Hind:F2} €\nLaos: {t.Kogus} tk");
         kaart.Controls.AddRange(new Control[] { pilt, nimi, hind, laos, kogus, nupp });
-        // Märgis peab jääma pildi peale, mitte pildi alla.
-        foreach (var mark in kaart.Controls.OfType<Label>()
-                     .Where(x => x.Text.StartsWith("NÄIDIS", StringComparison.Ordinal)))
-            mark.BringToFront();
         return kaart;
     }
 

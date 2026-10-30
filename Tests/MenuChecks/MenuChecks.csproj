@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" />
+    <Compile Include="../../Tooded_EFCore/Toode.cs" Link="Toode.cs" />
+    <Compile Include="../../Tooded_EFCore/Kategooria.cs" Link="Kategooria.cs" />
+    <Compile Include="../../Tooded_EFCore/Kasutaja.cs" Link="Kasutaja.cs" />
+    <Compile Include="../../Tooded_EFCore/ToodedContext.cs" Link="ToodedContext.cs" />
+    <Compile Include="../../Tooded_EFCore/MenuuAndmed.cs" Link="MenuuAndmed.cs" />
+    <Compile Include="../../Tooded_EFCore/Migrations/*.cs" Link="Migrations/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

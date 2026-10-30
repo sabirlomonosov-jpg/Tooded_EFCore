@@ -11,6 +11,7 @@ internal static class Program
         try
         {
             Kaustad.Loo();
+            NaidisTooted.ValmistaPildid();
             using (var db = new ToodedContext())
             {
                 db.Database.Migrate();

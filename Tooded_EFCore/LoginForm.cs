@@ -10,16 +10,17 @@ public partial class LoginForm : Form
 
     public LoginForm()
     {
-        PoeStiil.Vorm(this, "Tooded • Sisselogimine");
+        PoeStiil.Vorm(this, "McDonald’s • Sisselogimine");
         ClientSize = new Size(465, 540);
         MinimumSize = new Size(465, 540);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
 
-        var pais = new Panel { Dock = DockStyle.Top, Height = 165, BackColor = PoeStiil.Tume };
-        pais.Controls.Add(PoeStiil.Silt("TOODED+", 37, 36, 390, 45, 26, true, Color.White));
-        pais.Controls.Add(PoeStiil.Silt("Õppepoe haldussüsteem · maxima.ee-st inspireeritud", 39, 88, 390, 30,
-            12, false, Color.FromArgb(185, 209, 226)));
+        var pais = new Panel { Dock = DockStyle.Top, Height = 165, BackColor = PoeStiil.Punane };
+        pais.Controls.Add(PoeStiil.Logo(35, 25));
+        pais.Controls.Add(PoeStiil.Silt("McDonald’s", 113, 36, 320, 45, 26, true, Color.White));
+        pais.Controls.Add(PoeStiil.Silt("Hea toit. Head hetked.", 39, 88, 390, 30,
+            12, false, Color.White));
 
         var sisu = new Panel { Dock = DockStyle.Fill, BackColor = Color.White, Padding = new Padding(36) };
         sisu.Controls.Add(PoeStiil.Silt("LOGI SISSE", 35, 7, 395, 34, 15, true));

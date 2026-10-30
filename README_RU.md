@@ -1,3 +1,5 @@
+> **Обновление меню:** магазин теперь оформлен в стиле McDonald’s с 17 блюдами и локальными изображениями. Миграция заменяет старые демонстрационные продукты при запуске на Windows. Цены примерные, в евро. Подробности и проверки: [MCDONALDS_RU.md](MCDONALDS_RU.md).
+
 # Tooded_EFCore — полное задание (части 1–7)
 
 Источник: `WinForms (.NET 8) + EF Core 8 – Toodete pood (parandatud juhend) 5.pdf`, 30 страниц.
@@ -17,7 +19,7 @@
 2. Откройте **`Tooded_EFCore.sln`** в Visual Studio 2022. В Project → Properties проверьте `Target Framework: .NET 8.0`.
 3. Solution → Restore NuGet Packages. Если пакеты скачаны, можно проверить Build → Rebuild Solution.
 4. Убедитесь, что SQL Server Express LocalDB установлен и `(localdb)\MSSQLLocalDB` запускается.
-5. Нажмите F5. `db.Database.Migrate()` автоматически создаёт базу `Tooded_DB` и применяет **две уже включённые миграции** (`InitialCreate`, `LisaKasutajad`).
+5. Нажмите F5. `db.Database.Migrate()` автоматически создаёт базу `Tooded_DB` и применяет **три включённые миграции** (`InitialCreate`, `LisaKasutajad`, `McDonaldsMenu`).
 
 **Не запускайте** `Add-Migration InitialCreate` поверх включённых миграций: они **уже находятся в проекте**. Для проверки доступности БД можно выполнить `Get-Migration`; новые миграции добавлять только при изменении моделей.
 

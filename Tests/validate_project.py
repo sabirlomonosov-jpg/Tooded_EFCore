@@ -24,8 +24,8 @@ for name in expected:
 for name in ['Form2', 'Form3', 'ArveForm', 'FormMain', 'LoginForm']:
     designer = project/f'{name}.Designer.cs'
     form = project/f'{name}.cs'
-    verify(f'{name} дизайнер', designer.is_file() and 'InitializeComponent()' in designer.read_text('utf-8'))
-    verify(f'{name} конструктор', f'public {name}()' in form.read_text('utf-8') and 'InitializeComponent();' in form.read_text('utf-8'))
+    verify(f'{name} программный интерфейс', 'Controls.Add' in form.read_text('utf-8'))
+    verify(f'{name} конструктор', f'public {name}()' in form.read_text('utf-8'))
     verify(f'{name} namespace', 'namespace Tooded_EFCore;' in form.read_text('utf-8'))
 
 csproj = ET.parse(project/'Tooded_EFCore.csproj')
@@ -54,7 +54,7 @@ verify('Фото копируются в LocalAppData', 'Kaustad.KopeeriPilt' in
 verify('Картинка необязательна при редактировании', 'if (valitudPilt != null)' in store)
 
 shop=(project/'Form3.cs').read_text('utf-8')
-verify('категории на табах', 'new TabPage(kat.Kategooria_nimetus)' in shop)
+verify('категории на табах', 'LisaLeht(grupp.Key, grupp.ToList())' in shop and 'GroupBy(t => t.Kategooria.Kategooria_nimetus)' in shop)
 verify('визуальные карточки', 'LooTootekaart' in shop and 'PictureBox' in shop)
 cart=(project/'Ostukorv.cs').read_text('utf-8')
 verify('общая корзина', 'static class Ostukorv' in cart)

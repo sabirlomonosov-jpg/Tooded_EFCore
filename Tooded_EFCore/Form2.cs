@@ -359,7 +359,7 @@ public partial class Form2 : Form
     {
         if (!AktiivneKasutaja.OnAdmin) return;
         if (MessageBox.Show(
-            "Kas lisada maxima.ee näidistooted (23.10.2026)? " +
+            "Kas lisada McDonald’s õppemenüü tooted? " +
             "Olemasolevaid tooteid ei muudeta. Hinnad on ainult õppeandmed.",
             "Näidistooted", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
             != DialogResult.Yes) return;

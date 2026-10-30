@@ -8,16 +8,17 @@ public partial class FormMain : Form
 
     public FormMain()
     {
-        PoeStiil.Vorm(this, "Tooded • Peamenüü");
+        PoeStiil.Vorm(this, "McDonald’s • Peamenüü");
         ClientSize = new Size(550, 575);
         MinimumSize = new Size(550, 575);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
 
-        var pais = new Panel { Dock = DockStyle.Top, Height = 156, BackColor = PoeStiil.Tume };
-        pais.Controls.Add(PoeStiil.Silt("TOODED+ / ÕPPEPOOD", 36, 25, 450, 36, 21, true, Color.White));
+        var pais = new Panel { Dock = DockStyle.Top, Height = 156, BackColor = PoeStiil.Punane };
+        pais.Controls.Add(PoeStiil.Logo(31, 17));
+        pais.Controls.Add(PoeStiil.Silt("McDonald’s · Eesti", 110, 31, 400, 36, 21, true, Color.White));
         pais.Controls.Add(PoeStiil.Silt("Tere tulemast, " + AktiivneKasutaja.Nimi, 36, 77,
-            450, 27, 12, false, Color.FromArgb(196, 211, 224)));
+            450, 27, 12, false, Color.White));
         pais.Controls.Add(PoeStiil.Silt("Roll: " + AktiivneKasutaja.Roll, 36, 109,
             450, 23, 10, false, PoeStiil.Kampaania));
 
@@ -33,7 +34,7 @@ public partial class FormMain : Form
 
         SeaNupp(btnTooted, "Toodete haldus", "Lisa ja muuda tooteid", 18,
             (_, _) => Ava(new Form2()), true);
-        SeaNupp(btnPood, "Pood", "Vaata kaupu ja lisa ostukorvi", 115,
+        SeaNupp(btnPood, "Meie menüü", "Vali oma lemmikud", 115,
             (_, _) => Ava(new Form3()), true);
         SeaNupp(btnArve, "Ostukorv ja arve", "Kinnita ost ja loo PDF", 212,
             (_, _) => Ava(new ArveForm()), false);
