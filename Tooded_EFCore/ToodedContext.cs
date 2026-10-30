@@ -4,13 +4,17 @@ namespace Tooded_EFCore;
 
 public class ToodedContext : DbContext
 {
+    public ToodedContext() { }
+    public ToodedContext(DbContextOptions<ToodedContext> options) : base(options) { }
     public DbSet<Toode> Toodetabel => Set<Toode>();
     public DbSet<Kategooria> Kategooriatabel => Set<Kategooria>();
     public DbSet<Kasutaja> Kasutajad => Set<Kasutaja>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        if (optionsBuilder.IsConfigured) return;
         optionsBuilder.UseSqlServer(
+            Environment.GetEnvironmentVariable("TOODED_CONNECTION_STRING") ??
             @"Server=(localdb)\MSSQLLocalDB;Database=Tooded_DB;Trusted_Connection=True;TrustServerCertificate=True;");
     }
 

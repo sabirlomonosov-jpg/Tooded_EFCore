@@ -34,4 +34,29 @@ Check("data-only migration leaves schema and accounts intact", operations.Count 
 Check("replaced demo rows retain stock and identity", !upgrade.Contains("SET [Kogus]") && !upgrade.Contains("SET [Id]") &&
     upgrade.Split("UPDATE [Toodetabel]").Length - 1 == 17);
 Check("no work after latest migration", string.IsNullOrWhiteSpace(migrator.GenerateScript("20261030000100_McDonaldsMenu", "20261030000100_McDonaldsMenu")));
-Console.WriteLine($"{count}/{count} checks passed. SQL generation only; no live LocalDB connection was made.");
+Ostukorv.Tyhjenda();
+Check("empty cart cannot proceed to checkout", !Ostukorv.SaabMaksta && Ostukorv.Kokku == 0);
+var burger = new Toode { Id = 1, Toodenimetus = "Burger", Hind = 5.50m, Kogus = 5 };
+var fries = new Toode { Id = 2, Toodenimetus = "Fries", Hind = 2.20m, Kogus = 3 };
+Check("add items and aggregate duplicate products", Ostukorv.Lisa(burger, 2) && Ostukorv.Lisa(burger, 1) &&
+    Ostukorv.Lisa(fries, 2) && Ostukorv.Ridad.Count == 2 && Ostukorv.Ridad[0].Kogus == 3 && Ostukorv.Kokku == 20.90m);
+Check("reject invalid additions without mutating cart", !Ostukorv.Lisa(burger, 0) && !Ostukorv.Lisa(burger, -1) &&
+    !Ostukorv.Lisa(burger, int.MaxValue) && Ostukorv.Ridad[0].Kogus == 3 && Ostukorv.Kokku == 20.90m);
+Check("edit quantity updates line and receipt totals", Ostukorv.MuudaKogus(1, 5) &&
+    Ostukorv.Ridad[0].Summa == 27.50m && Ostukorv.Kokku == 31.90m && Ostukorv.SaabMaksta);
+Check("reject negative, excessive and missing-product edits", !Ostukorv.MuudaKogus(1, -1) &&
+    !Ostukorv.MuudaKogus(1, 6) && !Ostukorv.MuudaKogus(99, 1) && Ostukorv.Ridad[0].Kogus == 5);
+Check("zero quantity removes a row", Ostukorv.MuudaKogus(2, 0) && Ostukorv.Ridad.Count == 1 && Ostukorv.Kokku == 27.50m);
+Ostukorv.VarskendaTooted(new[] { new Toode { Id = 1, Hind = 6m, Kogus = 2 } });
+Check("stock and price refresh blocks unavailable quantities", Ostukorv.Kokku == 30m && !Ostukorv.SaabMaksta &&
+    Ostukorv.Ridad[0].Kogus == 5);
+Check("reducing quantity restores checkout", Ostukorv.MuudaKogus(1, 2) && Ostukorv.SaabMaksta && Ostukorv.Kokku == 12m);
+Ostukorv.VarskendaTooted(Array.Empty<Toode>());
+Check("deleted product remains removable but cannot be purchased", !Ostukorv.SaabMaksta &&
+    !Ostukorv.MuudaKogus(1, 1) && Ostukorv.Eemalda(1) && Ostukorv.Ridad.Count == 0 && !Ostukorv.SaabMaksta);
+Check("remove missing row is harmless", !Ostukorv.Eemalda(99));
+Ostukorv.Lisa(burger, 1);
+Ostukorv.Tyhjenda();
+Check("successful checkout clears the shared cart", Ostukorv.Ridad.Count == 0 && Ostukorv.Kokku == 0 && !Ostukorv.SaabMaksta);
+if (args.Contains("--sql")) SqlStartupChecks.Run(Check);
+Console.WriteLine($"{count}/{count} checks passed. Live SQL Server checks run only with --sql.");

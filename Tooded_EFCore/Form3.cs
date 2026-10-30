@@ -8,6 +8,7 @@ public partial class Form3 : Form
 {
     private readonly ToodedContext _db = new();
     private readonly TabControl tabPood = new();
+    private readonly OstukorviTsekk tsekk = new();
     private readonly TextBox txtOtsi = new();
     private readonly Label lblKorv = new(), lblTulemused = new();
     private readonly Button btnAvaKorv = new(), btnVarskenda = new();
@@ -16,9 +17,9 @@ public partial class Form3 : Form
 
     public Form3()
     {
-        PoeStiil.Vorm(this, "Tooted • Õppepood");
+        PoeStiil.Vorm(this, "McDonald’s • Menüü ja ostukorv");
         ClientSize = new Size(1240, 820);
-        MinimumSize = new Size(900, 600);
+        MinimumSize = new Size(1000, 720);
 
         var pais = new Panel { Dock = DockStyle.Top, Height = 121, BackColor = PoeStiil.Punane };
         pais.Controls.Add(PoeStiil.Logo(24, 15));
@@ -32,20 +33,16 @@ public partial class Form3 : Form
         lblKorv.ForeColor = Color.White;
         lblKorv.TextAlign = ContentAlignment.MiddleLeft;
 
-        btnAvaKorv.Text = "OSTUKORV  ›";
         btnAvaKorv.SetBounds(1015, 23, 195, 50);
         btnAvaKorv.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         PoeStiil.Nupp(btnAvaKorv);
         btnAvaKorv.BackColor = PoeStiil.Kampaania;
         btnAvaKorv.ForeColor = PoeStiil.Tume;
         btnAvaKorv.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 235, 102);
-        btnAvaKorv.Click += (_, _) =>
-        {
-            using var arve = new ArveForm();
-            arve.ShowDialog(this);
-            LaePood(); // Laos võib olla pärast ostu vähem kaupa.
-            NaitaKorviSeis();
-        };
+        btnAvaKorv.Text = "EDASI MAKSMA  ›";
+        btnAvaKorv.Click += (_, _) => AvaMaksmine();
+        tsekk.Maksmine += (_, _) => AvaMaksmine();
+        tsekk.Muudetud += (_, _) => NaitaKorviPais();
         pais.Controls.AddRange(new Control[] { lblKorv, btnAvaKorv });
 
         var tegevused = new Panel { Dock = DockStyle.Top, Height = 77,
@@ -74,7 +71,18 @@ public partial class Form3 : Form
         tabPood.Dock = DockStyle.Fill;
         tabPood.Font = new Font("Segoe UI", 10.5f, FontStyle.Bold);
         tabPood.Padding = new Point(16, 9);
-        sisu.Controls.Add(tabPood);
+        var paigutus = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty
+        };
+        paigutus.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        paigutus.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 365));
+        paigutus.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        tsekk.Dock = DockStyle.Fill;
+        tsekk.Margin = new Padding(14, 0, 0, 0);
+        paigutus.Controls.Add(tabPood, 0, 0);
+        paigutus.Controls.Add(tsekk, 1, 0);
+        sisu.Controls.Add(paigutus);
         Controls.Add(sisu);
         Controls.Add(kampaaniariba);
         Controls.Add(tegevused);
@@ -90,12 +98,26 @@ public partial class Form3 : Form
         SizeChanged += (_, _) => KohandaPaigutus();
         KohandaPaigutus();
         LaePood();
-        NaitaKorviSeis();
     }
 
     private void NaitaKorviSeis()
     {
-        lblKorv.Text = $"Korvis: {Ostukorv.Ridad.Sum(r => r.Kogus)} tk    Kokku: {Ostukorv.Kokku:F2} €";
+        NaitaKorviPais();
+        tsekk.Naita();
+    }
+
+    private void NaitaKorviPais()
+    {
+        lblKorv.Text = $"Korvis: {Ostukorv.Ridad.Sum(r => (long)r.Kogus)} tk    Kokku: {Ostukorv.Kokku:F2} €";
+        btnAvaKorv.Enabled = Ostukorv.SaabMaksta;
+    }
+
+    private void AvaMaksmine()
+    {
+        if (!Ostukorv.SaabMaksta) return;
+        using var arve = new ArveForm();
+        arve.ShowDialog(this);
+        LaePood();
     }
 
     private void LaePood()
@@ -105,7 +127,9 @@ public partial class Form3 : Form
             .Include(t => t.Kategooria)
             .OrderBy(t => t.Toodenimetus)
             .ToList();
+        Ostukorv.VarskendaTooted(tooted);
         NaitaKategooriad();
+        NaitaKorviSeis();
     }
 
     private void NaitaKategooriad()

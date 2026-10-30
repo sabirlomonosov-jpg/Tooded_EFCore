@@ -42,7 +42,7 @@ for table in ['Toodetabel','Kategooriatabel','Kasutajad']:
     verify(f'таблица {table}', f'"{table}"' in context)
 
 program = (project/'Program.cs').read_text('utf-8')
-verify('Migrate()', 'Database.Migrate()' in program)
+verify('Migrate()', 'AndmebaasiAlgataja.Valmista(db)' in program and 'Database.Migrate()' in (project/'AndmebaasiAlgataja.cs').read_text('utf-8'))
 verify('LoginForm entry', 'Application.Run(new LoginForm())' in program)
 verify('демо-аккаунты по методичке', 'admin@admin.ee' in program and 'kasutaja@pood.ee' in program)
 verify('BCrypt hashing', 'PasswordHelper.Hash' in program)

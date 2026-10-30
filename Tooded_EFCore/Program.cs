@@ -14,7 +14,7 @@ internal static class Program
             NaidisTooted.ValmistaPildid();
             using (var db = new ToodedContext())
             {
-                db.Database.Migrate();
+                AndmebaasiAlgataja.Valmista(db);
                 LooAlgkasutajad(db);
                 // Täiesti tühja andmebaasi täidame õppeprojektis näidistoodetega.
                 // Kui tooteid on juba olemas, ei muudeta olemasolevaid ridu.
@@ -25,7 +25,9 @@ internal static class Program
         catch (Exception ex)
         {
             MessageBox.Show(
-                "Programmi käivitamine ebaõnnestus. Kontrolli SQL Server LocalDB ühendust.\n\n" + ex.Message,
+                "Programmi käivitamine ebaõnnestus.\n" +
+                "Kontrolli SQL Server LocalDB ühendust ja olemasoleva andmebaasi ligipääsu.\n" +
+                "Ära kustuta olemasolevat andmebaasi.\n\n" + ex.Message,
                 "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }

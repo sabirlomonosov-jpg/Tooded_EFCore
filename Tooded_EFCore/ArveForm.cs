@@ -20,12 +20,12 @@ public partial class ArveForm : Form
     public ArveForm()
     {
         
-        PoeStiil.Vorm(this, "Tooted • Ostukorv ja arve");
+        PoeStiil.Vorm(this, "McDonald’s • Maksmine");
         ClientSize = new Size(860, 575);
         MinimumSize = new Size(760, 525);
 
         var pais = new Panel { Dock = DockStyle.Top, Height = 96, BackColor = PoeStiil.Tume };
-        pais.Controls.Add(PoeStiil.Silt("OSTUKORV JA ARVE", 25, 14, 760, 37, 20, true, Color.White));
+        pais.Controls.Add(PoeStiil.Silt("MAKSMINE", 25, 14, 760, 37, 20, true, Color.White));
         pais.Controls.Add(PoeStiil.Silt("Kontrolli kaupu, kinnita ost ja saada PDF e-postiga", 27, 53,
             760, 25, 10, false, Color.FromArgb(185, 208, 221)));
 
@@ -51,7 +51,7 @@ public partial class ArveForm : Form
         lblKokku.Dock = DockStyle.Bottom;
         lblKokku.Height = 58;
         lblKokku.Font = new Font("Segoe UI", 18f, FontStyle.Bold);
-        lblKokku.ForeColor = PoeStiil.Peamine;
+        lblKokku.ForeColor = PoeStiil.Tekst;
         lblKokku.TextAlign = ContentAlignment.MiddleLeft;
         vasak.Controls.Add(listOstukorv);
         vasak.Controls.Add(loendiPealkiri);
@@ -72,7 +72,7 @@ public partial class ArveForm : Form
         lblInfo.SetBounds(20, 320, 285, 115);
         lblInfo.ForeColor = PoeStiil.Vaikne;
         lblInfo.Font = new Font("Segoe UI", 9.5f);
-        lblInfo.Text = "PDF salvestatakse kausta\nAppData\\Local\\ToodedApp\\Arved.\n\nE-posti seadistust kontrolli ArveForm.cs failis.";
+        lblInfo.Text = "PDF salvestatakse kausta\nAppData\\Local\\ToodedApp\\Arved.\n\nSoovi korral saad saata arve e-postiga.";
         parem.Controls.AddRange(new Control[] { btnEemalda, btnGenPDF, btnSaadaEmail, lblInfo });
 
         raam.Controls.Add(vasak, 0, 0);
@@ -106,7 +106,7 @@ public partial class ArveForm : Form
     {
         if (listOstukorv.SelectedItem is OstukorviRida rida)
         {
-            Ostukorv.Ridad.Remove(rida);
+            Ostukorv.Eemalda(rida.Toode.Id);
             NaitaKorvi();
         }
     }
