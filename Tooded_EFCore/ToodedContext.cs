@@ -13,9 +13,8 @@ public class ToodedContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (optionsBuilder.IsConfigured) return;
-        optionsBuilder.UseSqlServer(
-            Environment.GetEnvironmentVariable("TOODED_CONNECTION_STRING") ??
-            @"Server=(localdb)\MSSQLLocalDB;Database=Tooded_DB;Trusted_Connection=True;Encrypt=False;");
+        optionsBuilder.UseSqlServer(AndmebaasiSeaded.Kasutaja.Loe(
+            Environment.GetEnvironmentVariable("TOODED_CONNECTION_STRING")));
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

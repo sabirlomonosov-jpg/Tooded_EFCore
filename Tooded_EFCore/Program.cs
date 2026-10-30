@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 
 namespace Tooded_EFCore;
 
@@ -12,13 +13,7 @@ internal static class Program
         {
             Kaustad.Loo();
             NaidisTooted.ValmistaPildid();
-            AndmebaasiAlgataja.Kaivita(db =>
-            {
-                LooAlgkasutajad(db);
-                // Täiesti tühja andmebaasi täidame õppeprojektis näidistoodetega.
-                // Kui tooteid on juba olemas, ei muudeta olemasolevaid ridu.
-                if (!db.Toodetabel.Any()) NaidisTooted.LisaAndmed(db);
-            });
+            if (!KaivitaAndmebaas()) return;
             Application.Run(new LoginForm());
         }
         catch (Exception ex)
@@ -29,6 +24,42 @@ internal static class Program
                 "Ära kustuta olemasolevat andmebaasi.\n\n" + KaivituseKordus.Kirjelda(ex),
                 "Viga", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+    }
+
+    private static bool KaivitaAndmebaas()
+    {
+        string? keskkond = Environment.GetEnvironmentVariable("TOODED_CONNECTION_STRING");
+        string uhendus = AndmebaasiSeaded.Kasutaja.Loe(keskkond);
+        bool uusValik = false;
+        while (true)
+        {
+            try
+            {
+                AndmebaasiAlgataja.Kaivita(LisaAlgandmed, uhendus);
+                // Remember the selection only after migrations and seeding succeed.
+                if (uusValik)
+                    AndmebaasiSeaded.Kasutaja.SalvestaNimi(new SqlConnectionStringBuilder(uhendus).InitialCatalog);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                var seaded = new SqlConnectionStringBuilder(uhendus);
+                bool saabLuua = string.IsNullOrWhiteSpace(keskkond)
+                    && seaded.IntegratedSecurity
+                    && seaded.DataSource.StartsWith(@"(localdb)\", StringComparison.OrdinalIgnoreCase)
+                    && KaivituseKordus.OnLigipaasuViga(ex);
+                using var aken = new AndmebaasiVeaVorm(ex, seaded.InitialCatalog, saabLuua);
+                if (aken.ShowDialog() != DialogResult.OK) return false;
+                uhendus = AndmebaasiSeaded.LooUusUhendus();
+                uusValik = true;
+            }
+        }
+    }
+
+    private static void LisaAlgandmed(ToodedContext db)
+    {
+        LooAlgkasutajad(db);
+        if (!db.Toodetabel.Any()) NaidisTooted.LisaAndmed(db);
     }
 
     private static void LooAlgkasutajad(ToodedContext db)

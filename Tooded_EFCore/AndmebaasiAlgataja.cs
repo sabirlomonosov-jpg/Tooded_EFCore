@@ -5,11 +5,12 @@ namespace Tooded_EFCore;
 
 public static class AndmebaasiAlgataja
 {
-    public static void Kaivita(Action<ToodedContext> algandmed)
+    public static void Kaivita(Action<ToodedContext> algandmed, string? uhendus = null)
     {
         KaivituseKordus.Kaivita(() =>
         {
-            using var db = new ToodedContext();
+            using var db = uhendus == null ? new ToodedContext() : new ToodedContext(
+                new DbContextOptionsBuilder<ToodedContext>().UseSqlServer(uhendus).Options);
             try
             {
                 Valmista(db);

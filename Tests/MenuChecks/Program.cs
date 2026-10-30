@@ -88,5 +88,37 @@ Check("healthy startup executes once without waiting", attempts == 1 && delays.C
 string detail = KaivituseKordus.Kirjelda(new InvalidOperationException("EF wrapper", new Exception("Underlying connection error")));
 Check("startup error includes inner database failure", detail.Contains("EF wrapper") && detail.Contains("Underlying connection error"));
 Check("purchase context keeps explicit-transaction-compatible execution strategy", !db.Database.CreateExecutionStrategy().RetriesOnFailure);
+Check("database access errors are recognized separately from timeouts", KaivituseKordus.OnLigipaasuViga(new[] { 4060, 18456 }) &&
+    !KaivituseKordus.OnLigipaasuViga(new[] { -2, 10060 }));
+string settingsDir = Path.Combine(Path.GetTempPath(), "tooded-settings-" + Guid.NewGuid().ToString("N"));
+Directory.CreateDirectory(settingsDir);
+try
+{
+    string settingsFile = Path.Combine(settingsDir, "database-name.txt");
+    var settings = new AndmebaasiSeaded(settingsFile);
+    var original = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(settings.Loe(null));
+    Check("no silent switch when no database choice is saved", original.InitialCatalog == "Tooded_DB" && !File.Exists(settingsFile));
+    string newConnection = AndmebaasiSeaded.LooUusUhendus();
+    var selected = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(newConnection);
+    Check("recovery proposes a unique LocalDB database without encryption", selected.InitialCatalog != original.InitialCatalog &&
+        newConnection != AndmebaasiSeaded.LooUusUhendus() && selected.IntegratedSecurity &&
+        selected.DataSource == original.DataSource && selected.Encrypt.Equals(Microsoft.Data.SqlClient.SqlConnectionEncryptOption.Optional));
+    Check("proposing recovery does not persist a selection", settings.Loe(null) == AndmebaasiSeaded.VaikeUhendus && !File.Exists(settingsFile));
+    settings.SalvestaNimi(selected.InitialCatalog);
+    Check("explicit selection survives restart and stores only the name", new AndmebaasiSeaded(settingsFile).Loe(null) == newConnection &&
+        File.ReadAllText(settingsFile) == selected.InitialCatalog);
+    const string custom = "Server=custom;Database=existing;Integrated Security=True;Encrypt=False";
+    Check("environment connection takes precedence over saved recovery", settings.Loe(custom) == custom);
+    bool invalid = false;
+    try { settings.SalvestaNimi("Tooded_DB;User Id=unwanted"); }
+    catch (InvalidOperationException) { invalid = true; }
+    Check("invalid choice cannot overwrite the selected database", invalid && settings.Loe(null) == newConnection);
+    File.WriteAllText(settingsFile, "invalid selection");
+    invalid = false;
+    try { settings.Loe(null); }
+    catch (InvalidOperationException) { invalid = true; }
+    Check("corrupt saved choice fails instead of silently using another database", invalid);
+}
+finally { Directory.Delete(settingsDir, recursive: true); }
 if (args.Contains("--sql")) SqlStartupChecks.Run(Check);
 Console.WriteLine($"{count}/{count} checks passed. Live SQL Server checks run only with --sql.");
